@@ -1,0 +1,14 @@
+{
+  "scheme": "xyz",
+  "projection": "lng = -35 + 0.02*x, mercY = mercY(-20) + 0.000349*y",
+  "centerLat": -20,
+  "centerLng": -35,
+  "tileSize": 256,
+  "format": "jpg",
+  "minzoom": 0,
+  "maxzoom": 10,
+  "background": "#000f12",
+  "worldBounds": { "minX": -6500, "maxX": 10100, "minY": -6400, "maxY": 9700 },
+  "bounds": [-165, -81.419226, 167, 84.461777],
+  "generated": "2026-10-14T13:07:06"
+}
