@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aperçu des tiles</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>html,body,#map{margin:0;height:100%}#map{background:#000f12}
+#ui{position:absolute;top:10px;right:10px;z-index:1000;background:rgba(0,0,0,.75);color:#fff;font:13px sans-serif;padding:8px 10px;border-radius:6px;line-height:1.7}#ui input{vertical-align:middle}</style>
+</head><body><div id="map"></div>
+<div id="ui"><label>Tiles générées <input id="op" type="range" min="0" max="1" step="0.05" value="1"></label><br>
+<label><input id="rsg" type="checkbox" checked> Carte Rockstar dessous</label><div id="pos">&nbsp;</div></div>
+<script>
+const C_LNG=-35,C_LAT=-20,LNG_U=0.02,MERC_U=0.000349,Y0=Math.log(Math.tan(Math.PI/4+C_LAT*Math.PI/360));
+const ROCKSTAR=false; //the Rockstar tiles only line up with the Rockstar projection
+const toWorld=(ll)=>({x:(ll.lng-C_LNG)/LNG_U,y:(Math.log(Math.tan(Math.PI/4+ll.lat*Math.PI/360))-Y0)/MERC_U});
+const toLatLng=(x,y)=>L.latLng(Math.atan(Math.sinh(Y0+MERC_U*y))*180/Math.PI,C_LNG+LNG_U*x);
+const MAXZ=10,MINZ=0;
+const map=L.map('map',{minZoom:0,maxZoom:MAXZ+2,zoomSnap:0.5,attributionControl:false}).setView(toLatLng(0,0),3);
+const rsg=L.tileLayer('https://s.rsg.sc/sc/images/games/GTAV/map/render/{z}/{x}/{y}.jpg',{maxNativeZoom:7,maxZoom:MAXZ+2});if(ROCKSTAR)rsg.addTo(map);else{document.getElementById('rsg').checked=false;document.getElementById('rsg').disabled=true;}
+const gen=L.tileLayer('{z}/{x}/{y}.jpg',{minNativeZoom:MINZ,maxNativeZoom:MAXZ,maxZoom:MAXZ+2,errorTileUrl:'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='}).addTo(map);
+document.getElementById('op').oninput=(e)=>gen.setOpacity(+e.target.value);
+document.getElementById('rsg').onchange=(e)=>e.target.checked?rsg.addTo(map):map.removeLayer(rsg);
+const pos=document.getElementById('pos');const showPos=(ll)=>{const w=toWorld(ll);pos.textContent='GTA x '+w.x.toFixed(1)+'  y '+w.y.toFixed(1)+'  —  zoom '+map.getZoom();};
+map.on('mousemove',(e)=>showPos(e.latlng));map.on('zoomend',()=>showPos(map.getCenter()));showPos(map.getCenter());
+</script></body></html>
